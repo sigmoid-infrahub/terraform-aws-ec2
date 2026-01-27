@@ -1,0 +1,21 @@
+{
+    "resourceSpecId": "ffffffff-ffff-4fff-8fff-ffffffffffff",
+    "stableId": "app-ec2",
+    "displayName": "App EC2",
+    "resourceType": "compute.ec2",
+    "vpcDependency": "required",
+    "status": "draft",
+    "inputs": {
+        "ami": "ami-0abcdef1234567890",
+        "instance_type": "t3.small",
+        "subnet_id": { "ref": "core-vpc.private_subnet_id", "required": true },
+        "security_group_ids": [
+            { "ref": "app-sg.security_group_id", "required": true }
+        ]
+    },
+    "terraform": {
+        "module": {
+            "source": "../../terraform-modules/terraform-aws-ec2"
+        }
+    }
+}
