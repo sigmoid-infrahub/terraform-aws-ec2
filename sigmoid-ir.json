@@ -2,9 +2,14 @@
     "resourceSpecId": "ffffffff-ffff-4fff-8fff-ffffffffffff",
     "stableId": "app-ec2",
     "displayName": "App EC2",
+    "category": "compute",
+    "iconUrl": "https://cdn.sigmoid.us/icons/aws/full-size/svg/compute/ec2.svg",
     "resourceType": "compute.ec2",
     "vpcDependency": "required",
     "status": "draft",
+    "deploy": {
+        "enabled": false
+    },
     "inputs": {
         "ami": "ami-0abcdef1234567890",
         "instance_type": "t3.small",
@@ -13,6 +18,13 @@
             { "ref": "app-sg.security_group_id", "required": true }
         ]
     },
+    "inputSpecs": [
+        { "name": "ami", "type": "string", "required": true },
+        { "name": "instance_type", "type": "string", "required": true },
+        { "name": "subnet_id", "type": "string", "required": true, "description": "VPC subnet ID (required for VPC-based EC2)" },
+        { "name": "security_group_ids", "type": "array", "required": false, "description": "List of security group IDs" }
+    ],
+    "position": { "x": 0, "y": 0 },
     "terraform": {
         "module": {
             "source": "../../terraform-modules/terraform-aws-ec2"
