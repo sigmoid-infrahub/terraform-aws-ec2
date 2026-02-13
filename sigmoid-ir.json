@@ -16,5 +16,21 @@
             "source": "github.com/sigmoid-hq/terraform-aws-ec2",
             "ref": "main"
         }
+    },
+    "pricing": {
+        "awsPricingLookup": {
+            "serviceCode": "AmazonEC2",
+            "unit": "hourly",
+            "quantityProperties": ["instance_count", "desired_capacity", "count"],
+            "quantityDefault": 1,
+            "filters": [
+                { "field": "location", "value": "${location}" },
+                { "field": "instanceType", "propertyKeys": ["instance_type", "instanceType"] },
+                { "field": "operatingSystem", "propertyKey": "operating_system", "defaultValue": "Linux", "required": false },
+                { "field": "tenancy", "propertyKey": "tenancy", "defaultValue": "Shared", "required": false },
+                { "field": "preInstalledSw", "defaultValue": "NA", "required": false },
+                { "field": "capacitystatus", "defaultValue": "Used", "required": false }
+            ]
+        }
     }
 }
