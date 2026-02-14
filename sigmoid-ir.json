@@ -31,6 +31,29 @@
                 { "field": "preInstalledSw", "defaultValue": "NA", "required": false },
                 { "field": "capacitystatus", "defaultValue": "Used", "required": false }
             ]
+        },
+        "usageProfiles": {
+            "default": "medium",
+            "low": {
+                "instance_count": 1,
+                "desired_capacity": 1,
+                "count": 1
+            },
+            "medium": {
+                "instance_count": 2,
+                "desired_capacity": 2,
+                "count": 2
+            },
+            "high": {
+                "instance_count": 4,
+                "desired_capacity": 4,
+                "count": 4
+            },
+            "xhigh": {
+                "instance_count": 8,
+                "desired_capacity": 8,
+                "count": 8
+            }
         }
     }
 }
