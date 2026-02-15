@@ -55,5 +55,11 @@
                 "count": 8
             }
         }
+    },
+    "easy": {
+        "alias": "Server",
+        "group": "compute-server",
+        "priority": 10,
+        "allowedProperties": ["instance_type", "ami", "count", "instance_count", "operating_system"]
     }
 }
