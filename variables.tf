@@ -29,3 +29,9 @@ variable "tags" {
   description = "Tags to apply to the instance"
   default     = {}
 }
+
+variable "enable_ssm" {
+  type        = bool
+  description = "Enable SSM Session Manager support for this EC2 instance"
+  default     = false
+}
