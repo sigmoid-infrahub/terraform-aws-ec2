@@ -1,7 +1,7 @@
 {
     "resourceSpecId": "ffffffff-ffff-4fff-8fff-ffffffffffff",
     "stableId": "app-ec2",
-    "displayName": "App EC2",
+    "displayName": "EC2 Instance",
     "category": "compute",
     "iconUrl": "https://cdn.sigmoid.us/icons/aws/full-size/svg/compute/ec2.svg",
     "resourceType": "compute.ec2",
