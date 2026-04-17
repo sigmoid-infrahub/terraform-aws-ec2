@@ -1,0 +1,65 @@
+{
+    "resourceSpecId": "ffffffff-ffff-4fff-8fff-ffffffffffff",
+    "stableId": "app-ec2",
+    "displayName": "EC2 Instance",
+    "category": "compute",
+    "iconUrl": "https://cdn.sigmoid.us/icons/aws/full-size/svg/compute/ec2.svg",
+    "resourceType": "compute.ec2",
+    "vpcDependency": "required",
+    "status": "draft",
+    "deploy": {
+        "enabled": false
+    },
+    "position": { "x": 0, "y": 0 },
+    "terraform": {
+        "module": {
+            "source": "github.com/sigmoid-hq/terraform-aws-ec2",
+            "ref": "main"
+        }
+    },
+    "pricing": {
+        "awsPricingLookup": {
+            "serviceCode": "AmazonEC2",
+            "unit": "hourly",
+            "quantityProperties": ["instance_count", "desired_capacity", "count"],
+            "quantityDefault": 1,
+            "filters": [
+                { "field": "location", "value": "${location}" },
+                { "field": "instanceType", "propertyKeys": ["instance_type", "instanceType"] },
+                { "field": "operatingSystem", "propertyKey": "operating_system", "defaultValue": "Linux", "required": false },
+                { "field": "tenancy", "propertyKey": "tenancy", "defaultValue": "Shared", "required": false },
+                { "field": "preInstalledSw", "defaultValue": "NA", "required": false },
+                { "field": "capacitystatus", "defaultValue": "Used", "required": false }
+            ]
+        },
+        "usageProfiles": {
+            "default": "medium",
+            "low": {
+                "instance_count": 1,
+                "desired_capacity": 1,
+                "count": 1
+            },
+            "medium": {
+                "instance_count": 2,
+                "desired_capacity": 2,
+                "count": 2
+            },
+            "high": {
+                "instance_count": 4,
+                "desired_capacity": 4,
+                "count": 4
+            },
+            "xhigh": {
+                "instance_count": 8,
+                "desired_capacity": 8,
+                "count": 8
+            }
+        }
+    },
+    "easy": {
+        "alias": "Server",
+        "group": "compute-server",
+        "priority": 10,
+        "allowedProperties": ["instance_type", "ami", "count", "instance_count", "operating_system"]
+    }
+}
