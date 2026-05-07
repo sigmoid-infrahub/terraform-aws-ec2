@@ -9,4 +9,6 @@ locals {
   resolved_tags = merge({
     ManagedBy = "sigmoid"
   }, var.tags, local.sigmoid_tags)
+
+  has_root_volume_kms_key = length(trimspace(var.root_volume_kms_key_id)) > 0
 }
