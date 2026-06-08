@@ -18,6 +18,18 @@ variable "subnet_id" {
   description = "Subnet ID"
 }
 
+variable "key_name" {
+  type        = string
+  description = "Name of an existing EC2 key pair for SSH access"
+  default     = null
+}
+
+variable "user_data" {
+  type        = string
+  description = "User data script to run on instance launch"
+  default     = null
+}
+
 variable "security_group_ids" {
   type        = list(string)
   description = "Security group IDs"

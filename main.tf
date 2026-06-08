@@ -39,6 +39,9 @@ resource "aws_instance" "this" {
   instance_type = var.instance_type
   subnet_id     = var.subnet_id
 
+  key_name  = var.key_name
+  user_data = var.user_data
+
   vpc_security_group_ids = var.security_group_ids
   iam_instance_profile   = var.enable_ssm ? aws_iam_instance_profile.ssm_profile[0].name : null
 
@@ -71,6 +74,9 @@ resource "aws_launch_template" "this" {
   name_prefix   = "${lookup(local.resolved_tags, "Name", "ec2")}-"
   image_id      = var.ami
   instance_type = var.instance_type
+
+  key_name  = var.key_name
+  user_data = var.user_data != null ? base64encode(var.user_data) : null
 
   disable_api_termination = var.disable_api_termination
   disable_api_stop        = var.disable_api_stop
