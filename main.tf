@@ -1,5 +1,5 @@
 resource "aws_iam_role" "ssm_role" {
-  count = var.enable_ssm ? 1 : 0
+  count = local.needs_iam_profile ? 1 : 0
 
   name_prefix = "ec2-ssm-"
 
@@ -20,16 +20,32 @@ resource "aws_iam_role" "ssm_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "ssm_core" {
-  count      = var.enable_ssm ? 1 : 0
+  count      = var.enable_ssm && local.needs_iam_profile ? 1 : 0
   role       = aws_iam_role.ssm_role[0].name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
+resource "aws_iam_role_policy_attachment" "cloudwatch_agent" {
+  count      = local.logging_enabled ? 1 : 0
+  role       = aws_iam_role.ssm_role[0].name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+}
+
 resource "aws_iam_instance_profile" "ssm_profile" {
-  count = var.enable_ssm ? 1 : 0
+  count = local.needs_iam_profile ? 1 : 0
 
   name_prefix = "ec2-ssm-"
   role        = aws_iam_role.ssm_role[0].name
+}
+
+resource "aws_cloudwatch_log_group" "app_logs" {
+  count = local.logging_enabled ? 1 : 0
+
+  name              = local.log_group_name
+  retention_in_days = var.log_retention_in_days
+  kms_key_id        = local.has_root_volume_kms_key ? var.root_volume_kms_key_id : null
+
+  tags = local.resolved_tags
 }
 
 resource "aws_instance" "this" {
@@ -40,10 +56,10 @@ resource "aws_instance" "this" {
   subnet_id     = var.subnet_id
 
   key_name  = var.key_name
-  user_data = var.user_data
+  user_data = local.composed_user_data
 
   vpc_security_group_ids = var.security_group_ids
-  iam_instance_profile   = var.enable_ssm ? aws_iam_instance_profile.ssm_profile[0].name : null
+  iam_instance_profile   = local.iam_instance_profile_name
 
   monitoring              = var.detailed_monitoring
   disable_api_termination = var.disable_api_termination
@@ -71,12 +87,12 @@ resource "aws_instance" "this" {
 resource "aws_launch_template" "this" {
   count = var.enable_asg ? 1 : 0
 
-  name_prefix   = "${lookup(local.resolved_tags, "Name", "ec2")}-"
+  name_prefix   = "${local.instance_name}-"
   image_id      = var.ami
   instance_type = var.instance_type
 
   key_name  = var.key_name
-  user_data = var.user_data != null ? base64encode(var.user_data) : null
+  user_data = local.composed_user_data != null ? base64encode(local.composed_user_data) : null
 
   disable_api_termination = var.disable_api_termination
   disable_api_stop        = var.disable_api_stop
@@ -108,7 +124,7 @@ resource "aws_launch_template" "this" {
   }
 
   dynamic "iam_instance_profile" {
-    for_each = var.enable_ssm ? [1] : []
+    for_each = local.needs_iam_profile ? [1] : []
     content {
       name = aws_iam_instance_profile.ssm_profile[0].name
     }

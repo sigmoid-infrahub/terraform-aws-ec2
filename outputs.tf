@@ -24,8 +24,8 @@ output "primary_network_interface_id" {
 }
 
 output "iam_instance_profile_arn" {
-  description = "IAM instance profile ARN for SSM access (null if SSM disabled)"
-  value       = var.enable_ssm ? aws_iam_instance_profile.ssm_profile[0].arn : null
+  description = "IAM instance profile ARN for SSM and/or CloudWatch logging access (null if neither enabled)"
+  value       = local.needs_iam_profile ? aws_iam_instance_profile.ssm_profile[0].arn : null
 }
 
 output "asg_id" {
@@ -48,6 +48,11 @@ output "launch_template_id" {
   value       = var.enable_asg ? aws_launch_template.this[0].id : ""
 }
 
+output "log_group_name" {
+  description = "CloudWatch log group name for shipped instance logs (empty when log_paths is not set)"
+  value       = local.logging_enabled ? aws_cloudwatch_log_group.app_logs[0].name : ""
+}
+
 output "module" {
   description = "Full module outputs"
   value = {
@@ -56,7 +61,7 @@ output "module" {
     private_ip                   = var.enable_asg ? null : aws_instance.this[0].private_ip
     public_ip                    = var.enable_asg ? null : aws_instance.this[0].public_ip
     primary_network_interface_id = var.enable_asg ? null : aws_instance.this[0].primary_network_interface_id
-    iam_instance_profile_arn     = var.enable_ssm ? aws_iam_instance_profile.ssm_profile[0].arn : null
+    iam_instance_profile_arn     = local.needs_iam_profile ? aws_iam_instance_profile.ssm_profile[0].arn : null
     asg_id                       = var.enable_asg ? aws_autoscaling_group.this[0].id : ""
     asg_arn                      = var.enable_asg ? aws_autoscaling_group.this[0].arn : ""
     asg_name                     = var.enable_asg ? aws_autoscaling_group.this[0].name : ""

@@ -156,6 +156,18 @@ variable "ebs_optimized" {
   default     = true
 }
 
+variable "log_paths" {
+  type        = list(string)
+  description = "Log file paths to ship to CloudWatch via the CloudWatch agent. Supports glob patterns (e.g. /var/log/app/*.log). When non-empty, the agent is installed and configured and a log group is created."
+  default     = []
+}
+
+variable "log_retention_in_days" {
+  type        = number
+  description = "Retention in days for the EC2 application log group created when log_paths is set."
+  default     = 30
+}
+
 # ====================================
 # Sigmoid Tags Configuration
 # ====================================
