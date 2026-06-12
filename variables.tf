@@ -244,6 +244,12 @@ variable "asg_target_group_arns" {
   default     = []
 }
 
+variable "target_group_arns" {
+  type        = list(string)
+  description = "Target group ARNs to register the single instance with (non-ASG path)"
+  default     = []
+}
+
 variable "asg_subnet_ids" {
   type        = list(string)
   description = "Subnet IDs for ASG (vpc_zone_identifier). Required when enable_asg = true."

@@ -113,6 +113,13 @@ resource "aws_instance" "this" {
   tags = local.resolved_tags
 }
 
+resource "aws_lb_target_group_attachment" "this" {
+  count = var.enable_asg ? 0 : length(var.target_group_arns)
+
+  target_group_arn = var.target_group_arns[count.index]
+  target_id        = aws_instance.this[0].id
+}
+
 resource "aws_launch_template" "this" {
   count = var.enable_asg ? 1 : 0
 
