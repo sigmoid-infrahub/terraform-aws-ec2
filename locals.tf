@@ -12,11 +12,12 @@ locals {
 
   has_root_volume_kms_key = length(trimspace(var.root_volume_kms_key_id)) > 0
 
-  instance_name             = lookup(local.resolved_tags, "Name", "ec2")
-  logging_enabled           = length(var.log_paths) > 0
-  log_group_name            = "/sigmoid/ec2/${local.instance_name}"
-  needs_iam_profile         = var.enable_ssm || local.logging_enabled
-  iam_instance_profile_name = local.needs_iam_profile ? aws_iam_instance_profile.ssm_profile[0].name : null
+  instance_name               = lookup(local.resolved_tags, "Name", "ec2")
+  resolved_security_group_ids = var.create_security_group ? concat(var.security_group_ids, [aws_security_group.this[0].id]) : var.security_group_ids
+  logging_enabled             = length(var.log_paths) > 0
+  log_group_name              = "/sigmoid/ec2/${local.instance_name}"
+  needs_iam_profile           = var.enable_ssm || local.logging_enabled
+  iam_instance_profile_name   = local.needs_iam_profile ? aws_iam_instance_profile.ssm_profile[0].name : null
 
   cw_agent_collect_files = [
     for path in var.log_paths : {

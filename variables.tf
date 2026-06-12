@@ -36,6 +36,31 @@ variable "security_group_ids" {
   default     = []
 }
 
+variable "vpc_id" {
+  type        = string
+  description = "VPC ID for the created security group"
+  default     = null
+}
+
+variable "create_security_group" {
+  type        = bool
+  description = "Whether to create a security group for this instance"
+  default     = false
+}
+
+variable "ingress_rules" {
+  type = list(object({
+    from_port                 = number
+    to_port                   = number
+    protocol                  = optional(string, "tcp")
+    cidr_blocks               = optional(list(string), [])
+    source_security_group_ids = optional(list(string), [])
+    description               = optional(string, null)
+  }))
+  description = "Ingress rules for the created security group"
+  default     = []
+}
+
 variable "tags" {
   type        = map(string)
   description = "Tags to apply to the instance"

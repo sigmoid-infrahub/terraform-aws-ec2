@@ -53,6 +53,11 @@ output "log_group_name" {
   value       = local.logging_enabled ? aws_cloudwatch_log_group.app_logs[0].name : ""
 }
 
+output "security_group_id" {
+  description = "Created security group ID"
+  value       = try(aws_security_group.this[0].id, null)
+}
+
 output "module" {
   description = "Full module outputs"
   value = {
@@ -66,5 +71,6 @@ output "module" {
     asg_arn                      = var.enable_asg ? aws_autoscaling_group.this[0].arn : ""
     asg_name                     = var.enable_asg ? aws_autoscaling_group.this[0].name : ""
     launch_template_id           = var.enable_asg ? aws_launch_template.this[0].id : ""
+    security_group_id            = try(aws_security_group.this[0].id, null)
   }
 }

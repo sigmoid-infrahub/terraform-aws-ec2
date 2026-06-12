@@ -48,6 +48,35 @@ resource "aws_cloudwatch_log_group" "app_logs" {
   tags = local.resolved_tags
 }
 
+resource "aws_security_group" "this" {
+  count = var.create_security_group ? 1 : 0
+
+  name        = "${local.instance_name}-ec2-sg"
+  description = "Security group for EC2 ${local.instance_name}"
+  vpc_id      = var.vpc_id
+
+  dynamic "ingress" {
+    for_each = var.ingress_rules
+    content {
+      from_port       = ingress.value.from_port
+      to_port         = ingress.value.to_port
+      protocol        = ingress.value.protocol
+      cidr_blocks     = ingress.value.cidr_blocks
+      security_groups = ingress.value.source_security_group_ids
+      description     = ingress.value.description
+    }
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = local.resolved_tags
+}
+
 resource "aws_instance" "this" {
   count = var.enable_asg ? 0 : 1
 
@@ -58,7 +87,7 @@ resource "aws_instance" "this" {
   key_name  = var.key_name
   user_data = local.composed_user_data
 
-  vpc_security_group_ids = var.security_group_ids
+  vpc_security_group_ids = local.resolved_security_group_ids
   iam_instance_profile   = local.iam_instance_profile_name
 
   monitoring              = var.detailed_monitoring
@@ -98,7 +127,7 @@ resource "aws_launch_template" "this" {
   disable_api_stop        = var.disable_api_stop
   ebs_optimized           = var.ebs_optimized
 
-  vpc_security_group_ids = var.security_group_ids
+  vpc_security_group_ids = local.resolved_security_group_ids
 
   metadata_options {
     http_tokens                 = var.metadata_http_tokens
