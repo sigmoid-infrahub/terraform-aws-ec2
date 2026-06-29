@@ -51,7 +51,7 @@ resource "aws_cloudwatch_log_group" "app_logs" {
 resource "aws_security_group" "this" {
   count = var.create_security_group ? 1 : 0
 
-  name        = "${local.instance_name}-ec2-sg"
+  name_prefix = "${local.instance_name}-ec2-"
   description = "Security group for EC2 ${local.instance_name}"
   vpc_id      = var.vpc_id
 
