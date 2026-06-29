@@ -75,6 +75,12 @@ resource "aws_security_group" "this" {
   }
 
   tags = local.resolved_tags
+
+  # name_prefix forces replacement; create the replacement SG before destroying the
+  # old one, which is still attached to the instance (else AWS DependencyViolation).
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_instance" "this" {
