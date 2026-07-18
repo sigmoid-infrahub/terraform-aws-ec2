@@ -61,6 +61,18 @@ variable "ingress_rules" {
   default     = []
 }
 
+variable "data_ingress_rules" {
+  type = list(object({
+    security_group_id = string
+    from_port         = number
+    to_port           = number
+    protocol          = optional(string, "tcp")
+    description       = optional(string, "")
+  }))
+  description = "Ingress rules created on connected data resources' security groups (target security_group_id), sourced from this instance's created security group. Emitted here (not on the data module) to avoid a data<->compute module dependency cycle."
+  default     = []
+}
+
 variable "tags" {
   type        = map(string)
   description = "Tags to apply to the instance"

@@ -83,6 +83,25 @@ resource "aws_security_group" "this" {
   }
 }
 
+# Ingress rules on connected data resources' security groups, sourced from this
+# instance's created security group. Emitted on the compute module (not the data
+# module) so the data module never references the compute SG, which would form a
+# data<->compute module dependency cycle.
+resource "aws_security_group_rule" "data_ingress" {
+  for_each = {
+    for rule in var.data_ingress_rules :
+    "${rule.security_group_id}-${rule.from_port}-${rule.protocol}" => rule
+  }
+
+  type                     = "ingress"
+  security_group_id        = each.value.security_group_id
+  source_security_group_id = aws_security_group.this[0].id
+  from_port                = each.value.from_port
+  to_port                  = each.value.to_port
+  protocol                 = each.value.protocol
+  description              = each.value.description
+}
+
 resource "aws_instance" "this" {
   count = var.enable_asg ? 0 : 1
 
